@@ -1,3 +1,5 @@
+import 'package:chain_linkage_algo/custom_node.dart';
+
 List<double> parseInputToList(String input) {
   List<String> list = input.split(" ");
   List<double> intList = [];
@@ -23,8 +25,27 @@ int chianLinckageMethod(List<int> chains) {
   return 0;
 }
 
-double calculateValueOfNode() {
-  return 0;
+// use Recursive to calculate sum value of all nodes
+calculateValueOfNode(CustomNode? node) {
+  if (node == null) {
+    return 0;
+  }
+
+  return node.value +
+      calculateValueOfNode(node.leftChild) +
+      calculateValueOfNode(node.rightChild);
+}
+
+// use Recursive to get all chians in order from tree as a list
+chainsToList(CustomNode? node, List list) {
+  if (node == null) {
+    return list;
+  }
+  chainsToList(node.leftChild, list);
+  list.add(node.value);
+  chainsToList(node.rightChild, list);
+
+  return list;
 }
 
 startMessages() {
