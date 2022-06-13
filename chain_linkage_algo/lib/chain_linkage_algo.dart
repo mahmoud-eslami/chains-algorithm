@@ -23,6 +23,10 @@ int chianLinckageMethod(List<int> chains) {
   return 0;
 }
 
+double calculateValueOfNode() {
+  return 0;
+}
+
 startMessages() {
   print("**********************************************");
   print("**********************************************");
