@@ -10,3 +10,18 @@ class CustomNode extends Equatable {
   @override
   List<Object?> get props => [leftChild, rightChild];
 }
+
+class NodeDirection extends Equatable {
+  final double value;
+  final String direction;
+
+  NodeDirection({required this.value, required this.direction});
+
+  @override
+  List<Object?> get props => [value, direction];
+
+  @override
+  String toString() {
+    return "($value,$direction)";
+  }
+}

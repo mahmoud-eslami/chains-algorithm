@@ -1,5 +1,7 @@
+import 'dart:collection';
+
 import 'package:chain_linkage_algo/chain_linkage_algo.dart';
-import 'package:chain_linkage_algo/custom_node.dart';
+import 'package:chain_linkage_algo/models.dart';
 
 void main(List<String> arguments) {
   // // entry point of application
@@ -10,13 +12,16 @@ void main(List<String> arguments) {
   // List<double> listOfChains = parseInputToList(input!);
 
   // print(getMaxChain(listOfChains));
-
-  print(
-    chainsToList(
-        CustomNode(
-            value: 20,
-            leftChild:
-                CustomNode(value: 30, rightChild: CustomNode(value: 30))),
-        []),
-  );
+  Queue queue = chainsToQueue(
+      CustomNode(
+          value: 20,
+          leftChild: CustomNode(
+            value: 30,
+            rightChild: CustomNode(
+              value: 30,
+              leftChild: CustomNode(value: 20),
+            ),
+          )),
+      Queue());
+  print(queue.toList());
 }
