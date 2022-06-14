@@ -2,30 +2,82 @@ import 'dart:collection';
 
 import 'package:chain_linkage_algo/models.dart';
 
-int chianLinckageMethod(List<int> chains) {
-  return 0;
+List<Queue> answerStatus = [];
+
+chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
+  if (index == chains.length || chains.length < 3) {
+  } else {
+    if (node == null) {
+      // create parent of tree for the first time
+      List<double> newList = chains;
+      double firstChainValue = newList[index];
+      chainLinckageMethod(newList, CustomNode(value: firstChainValue), 0);
+    } else {
+      // update child of the parent
+      List<double> newList = chains;
+      double firstChainValue = newList[index];
+      CustomNode leftChild =
+          CustomNode(value: firstChainValue, leftChild: node);
+      CustomNode rightChild =
+          CustomNode(value: firstChainValue, rightChild: node);
+      chainLinckageMethod(
+          chains, leftChild, (index < chains.length) ? index + 1 : index);
+      chainLinckageMethod(
+          chains, rightChild, (index < chains.length) ? index + 1 : index);
+    }
+  }
+  Queue currentQueue = nodeToQueue(node, Queue(), null);
+  if (currentQueue.length == chains.length) {
+    answerStatus.add(nodeToQueue(node, Queue(), null));
+  }
+  print(answerStatus.length);
+}
+
+calculateUsedAreaOfChains(List<NodeDirection> list) {
+  double max = 0;
+  double min = 0;
+  double position = 0;
+
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].direction == "P") {
+      position += list[i].value;
+      max = position;
+    } else if (list[i].direction == "R") {
+      position += list[i].value;
+    } else {
+      position -= list[i].value;
+    }
+
+    if (position > max) {
+      max = position;
+    } else if (position < min) {
+      min = position;
+    }
+  }
+
+  return max - min;
 }
 
 // use Recursive to get all chians in order from tree as a list
-/// N : node
+/// P : parent
 /// L : left
 /// R : right
 /// F : finish
-chainsToQueue(CustomNode? node, Queue<NodeDirection> queue) {
+nodeToQueue(CustomNode? node, Queue<NodeDirection> queue, CustomNode? parent) {
   if (node == null) {
     return queue;
   }
   queue.addLast(NodeDirection(
       value: node.value,
-      direction: (queue.isNotEmpty)
-          ? (node.leftChild == null)
-              ? (node.rightChild == null)
+      direction: (parent != null)
+          ? (parent.leftChild == null)
+              ? (parent.rightChild == null)
                   ? "F"
                   : "R"
               : "L"
-          : "N"));
-  chainsToQueue(node.leftChild, queue);
-  chainsToQueue(node.rightChild, queue);
+          : "P"));
+  nodeToQueue(node.leftChild, queue, node);
+  nodeToQueue(node.rightChild, queue, node);
 
   return queue;
 }

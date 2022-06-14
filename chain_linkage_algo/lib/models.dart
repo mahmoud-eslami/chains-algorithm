@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class CustomNode extends Equatable {
-  final CustomNode? leftChild;
-  final CustomNode? rightChild;
+  CustomNode? leftChild;
+  CustomNode? rightChild;
   final double value;
 
   CustomNode({this.leftChild, this.rightChild, required this.value});
