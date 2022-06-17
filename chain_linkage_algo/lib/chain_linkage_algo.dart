@@ -8,37 +8,43 @@ List<Queue> answerStatus = [];
 int globalStartPosition = 0;
 
 chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
+  print("Calculating...");
   if (index == chains.length || chains.length < 3) {
   } else {
     if (node == null) {
       // create parent of tree for the first time
       List<double> newList = chains;
       double firstChainValue = newList[index];
-      chainLinckageMethod(newList, CustomNode(value: firstChainValue), 1);
+      chainLinckageMethod(newList,
+          CustomNode(leftChild: CustomNode(value: firstChainValue)), 1);
+      chainLinckageMethod(newList,
+          CustomNode(rightChild: CustomNode(value: firstChainValue)), 1);
     } else {
       // update child of the parent
       List<double> newList = chains;
       double firstChainValue = newList[index];
-      CustomNode leftChild =
-          CustomNode(value: firstChainValue, leftChild: node);
-      CustomNode rightChild =
-          CustomNode(value: firstChainValue, rightChild: node);
+      node.value = firstChainValue;
+      CustomNode leftChild = CustomNode(leftChild: node);
+      CustomNode rightChild = CustomNode(rightChild: node);
       chainLinckageMethod(
           chains, leftChild, (index < chains.length) ? index + 1 : index);
       chainLinckageMethod(
           chains, rightChild, (index < chains.length) ? index + 1 : index);
     }
   }
-  Queue currentQueue = nodeToQueue(node, Queue(), null);
-  if (currentQueue.length == chains.length) {
-    answerStatus.add(nodeToQueue(node, Queue(), null));
-  }
-  if (answerStatus.length == chains.length) {
-    print(answerStatus);
-    print(answerStatus.length);
-  }
+  Queue currentQueue = nodeToQueue(node, Queue());
 
-  print("all states : ${pow(2, chains.length)}");
+  // print(node);
+  // print(" ");
+  // print(currentQueue);
+  // print(" ");
+  // we added a empty node as parent so the length of queue should be one more than chain list length
+  if (currentQueue.length == chains.length + 1) {
+    answerStatus.add(currentQueue);
+  }
+  if (answerStatus.length == pow(2, chains.length)) {
+    print(answerStatus);
+  }
 }
 
 calculateUsedAreaOfChains(List<NodeDirection> list) {
@@ -71,21 +77,14 @@ calculateUsedAreaOfChains(List<NodeDirection> list) {
 /// L : left
 /// R : right
 /// F : finish
-nodeToQueue(CustomNode? node, Queue<NodeDirection> queue, CustomNode? parent) {
+nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
   if (node == null) {
     return queue;
   }
   queue.addLast(NodeDirection(
-      value: node.value,
-      direction: (parent != null)
-          ? (parent.leftChild == null)
-              ? (parent.rightChild == null)
-                  ? "F"
-                  : "R"
-              : "L"
-          : "P"));
-  nodeToQueue(node.leftChild, queue, node);
-  nodeToQueue(node.rightChild, queue, node);
+      value: node.value ?? 0, direction: (node.leftChild == null) ? "R" : "L"));
+  nodeToQueue(node.leftChild, queue);
+  nodeToQueue(node.rightChild, queue);
 
   return queue;
 }
@@ -96,9 +95,10 @@ calculateValueOfNode(CustomNode? node) {
     return 0;
   }
 
-  return node.value +
-      calculateValueOfNode(node.leftChild) +
-      calculateValueOfNode(node.rightChild);
+  return node.value ??
+      0 +
+          calculateValueOfNode(node.leftChild) +
+          calculateValueOfNode(node.rightChild);
 }
 
 double getMaxChain(List chains) {
