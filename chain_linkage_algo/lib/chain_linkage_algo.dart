@@ -1,8 +1,11 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:chain_linkage_algo/models.dart';
 
 List<Queue> answerStatus = [];
+// this position show that what chain is start chain
+int globalStartPosition = 0;
 
 chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   if (index == chains.length || chains.length < 3) {
@@ -11,7 +14,7 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
       // create parent of tree for the first time
       List<double> newList = chains;
       double firstChainValue = newList[index];
-      chainLinckageMethod(newList, CustomNode(value: firstChainValue), 0);
+      chainLinckageMethod(newList, CustomNode(value: firstChainValue), 1);
     } else {
       // update child of the parent
       List<double> newList = chains;
@@ -30,7 +33,12 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   if (currentQueue.length == chains.length) {
     answerStatus.add(nodeToQueue(node, Queue(), null));
   }
-  print(answerStatus.length);
+  if (answerStatus.length == chains.length) {
+    print(answerStatus);
+    print(answerStatus.length);
+  }
+
+  print("all states : ${pow(2, chains.length)}");
 }
 
 calculateUsedAreaOfChains(List<NodeDirection> list) {
