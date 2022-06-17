@@ -1,15 +1,19 @@
 import 'dart:collection';
-import 'dart:math';
 
 import 'package:chain_linkage_algo/models.dart';
 
-List<Queue> answerStatus = [];
 // this position show that what chain is start chain
 int globalStartPosition = 0;
+double bestLength = 0;
 
 chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
-  print("Calculating...");
+  Queue<NodeDirection> currentQueue = nodeToQueue(node, Queue());
+  List<NodeDirection> nodeDirectionList =
+      queueToNodeDirectionList(currentQueue);
+  double length = calculateUsedAreaOfChains(nodeDirectionList);
+
   if (index == chains.length || chains.length < 3) {
+    // ignore this states
   } else {
     if (node == null) {
       // create parent of tree for the first time
@@ -20,6 +24,7 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
       chainLinckageMethod(newList,
           CustomNode(rightChild: CustomNode(value: firstChainValue)), 1);
     } else {
+      // if (bestLength != 0 && length > bestLength == false) {
       // update child of the parent
       List<double> newList = chains;
       double firstChainValue = newList[index];
@@ -30,24 +35,42 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
           chains, leftChild, (index < chains.length) ? index + 1 : index);
       chainLinckageMethod(
           chains, rightChild, (index < chains.length) ? index + 1 : index);
+      // }
     }
   }
-  Queue currentQueue = nodeToQueue(node, Queue());
 
-  // print(node);
-  // print(" ");
-  // print(currentQueue);
-  // print(" ");
   // we added a empty node as parent so the length of queue should be one more than chain list length
+  // it means we found a complete answer
   if (currentQueue.length == chains.length + 1) {
-    answerStatus.add(currentQueue);
-  }
-  if (answerStatus.length == pow(2, chains.length)) {
-    print(answerStatus);
+    if (bestLength == 0) {
+      bestLength = length;
+    } else if (length < bestLength) {
+      bestLength = length;
+    }
+
+    print("**Possible answer**");
+    print("  ");
+    print("diagram : ");
+    printTree2D(node, "");
+    print("queue : $currentQueue");
+    print("length : $length");
+    print("best length : $bestLength");
+    print("  ");
+    print("******************");
+    print("  ");
+    print("  ");
   }
 }
 
-calculateUsedAreaOfChains(List<NodeDirection> list) {
+printTree2D(CustomNode? node, String space) {
+  if (node == null) return;
+  space = (node.leftChild != null) ? "" : "    ";
+  print((node.value == null) ? "  root  " : space + node.value.toString());
+  printTree2D(node.leftChild, space);
+  printTree2D(node.rightChild, space);
+}
+
+double calculateUsedAreaOfChains(List<NodeDirection> list) {
   double max = 0;
   double min = 0;
   double position = 0;
@@ -72,12 +95,16 @@ calculateUsedAreaOfChains(List<NodeDirection> list) {
   return max - min;
 }
 
+// give me a queue to return a list with same type
+List<NodeDirection> queueToNodeDirectionList(Queue<NodeDirection> queue) =>
+    queue.toList();
+
 // use Recursive to get all chians in order from tree as a list
 /// P : parent
 /// L : left
 /// R : right
 /// F : finish
-nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
+Queue<NodeDirection> nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
   if (node == null) {
     return queue;
   }
@@ -87,18 +114,6 @@ nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
   nodeToQueue(node.rightChild, queue);
 
   return queue;
-}
-
-// use Recursive to calculate sum value of all nodes
-calculateValueOfNode(CustomNode? node) {
-  if (node == null) {
-    return 0;
-  }
-
-  return node.value ??
-      0 +
-          calculateValueOfNode(node.leftChild) +
-          calculateValueOfNode(node.rightChild);
 }
 
 double getMaxChain(List chains) {
@@ -112,7 +127,7 @@ double getMaxChain(List chains) {
 }
 
 List<double> parseInputToList(String input) {
-  List<String> list = input.split(" ");
+  List<String> list = input.split("-");
   List<double> intList = [];
 
   for (var i = 0; i < list.length; i++) {
@@ -122,7 +137,7 @@ List<double> parseInputToList(String input) {
   return intList;
 }
 
-startMessages() {
+void startMessages() {
   print("**********************************************");
   print("**********************************************");
   print("*****           Chain Linkage            *****");
@@ -139,6 +154,6 @@ startMessages() {
   print(" ");
   print(" ");
   print("Please enter list of chains with below format :");
-  print("for example : 2 3 4 5 6 10 2 2");
+  print("for example : 2-3-4-5-6-10-2-2");
   print(" ");
 }

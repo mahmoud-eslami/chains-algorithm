@@ -11,8 +11,7 @@ class CustomNode extends Equatable {
   @override
   List<Object?> get props => [leftChild, rightChild];
 
-  @override
-  String toString() {
+  printGraph() {
     final out = StringBuffer();
 
     rightChild?._buildTree(out, true, '');
@@ -35,6 +34,8 @@ class CustomNode extends Equatable {
     leftChild?._buildTree(
         stringBuffer, false, indent + (isRight ? '│    ' : '     '));
   }
+
+  void buildTree() {}
 }
 
 class NodeDirection extends Equatable {
