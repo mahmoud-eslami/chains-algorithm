@@ -12,16 +12,28 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
       queueToNodeDirectionList(currentQueue);
   double length = calculateUsedAreaOfChains(nodeDirectionList);
 
-  if (index == chains.length || chains.length < 3) {
+  /// improvement level 1
+  /// remove the part of tree when the length is more than best length
+  if (bestLength != 0 && length > bestLength) {
     // ignore this states
-  } else {
+    return;
+  }
+
+  /// improvement level 2
+  /// remove the part of tree when the length is more than 2* max chain length
+
+  // prevent to start when length of chains are smaller than 3
+  // stop to call function when all chains linked
+  if (index < chains.length && chains.length >= 3) {
     if (node == null) {
       // create parent of tree for the first time
       double chainValue = chains[index];
-      chainLinckageMethod(chains,
-          CustomNode(leftChild: CustomNode(value: chainValue)), index + 1);
-      chainLinckageMethod(chains,
-          CustomNode(rightChild: CustomNode(value: chainValue)), index + 1);
+      CustomNode leftLoaf =
+          CustomNode(leftChild: CustomNode(value: chainValue));
+      CustomNode rightLoaf =
+          CustomNode(leftChild: CustomNode(value: chainValue));
+      chainLinckageMethod(chains, leftLoaf, index + 1);
+      chainLinckageMethod(chains, rightLoaf, index + 1);
     } else {
       // update child of the parent
       double chainValue = chains[index];
@@ -46,8 +58,8 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
 
     print("**Possible answer**");
     print("  ");
-    print("diagram : ");
-    print(node);
+    // print("diagram : ");
+    // print(node);
     print("queue : $currentQueue");
     print("length : $length");
     print("best length : $bestLength");
@@ -110,16 +122,6 @@ Queue<NodeDirection> nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
   nodeToQueue(node.rightChild, queue);
 
   return queue;
-}
-
-double getMaxChain(List chains) {
-  double max = chains[0];
-  for (var element in chains) {
-    if (element > max) {
-      max = element;
-    }
-  }
-  return max;
 }
 
 List<double> parseInputToList(String input) {
