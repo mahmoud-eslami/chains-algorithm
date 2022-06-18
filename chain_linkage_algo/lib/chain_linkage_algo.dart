@@ -17,25 +17,21 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   } else {
     if (node == null) {
       // create parent of tree for the first time
-      List<double> newList = chains;
-      double firstChainValue = newList[index];
-      chainLinckageMethod(newList,
-          CustomNode(leftChild: CustomNode(value: firstChainValue)), 1);
-      chainLinckageMethod(newList,
-          CustomNode(rightChild: CustomNode(value: firstChainValue)), 1);
+      double chainValue = chains[index];
+      chainLinckageMethod(chains,
+          CustomNode(leftChild: CustomNode(value: chainValue)), index + 1);
+      chainLinckageMethod(chains,
+          CustomNode(rightChild: CustomNode(value: chainValue)), index + 1);
     } else {
-      // if (bestLength != 0 && length > bestLength == false) {
       // update child of the parent
-      List<double> newList = chains;
-      double firstChainValue = newList[index];
-      node.value = firstChainValue;
+      double chainValue = chains[index];
+      node.value = chainValue;
       CustomNode leftChild = CustomNode(leftChild: node);
       CustomNode rightChild = CustomNode(rightChild: node);
       chainLinckageMethod(
           chains, leftChild, (index < chains.length) ? index + 1 : index);
       chainLinckageMethod(
           chains, rightChild, (index < chains.length) ? index + 1 : index);
-      // }
     }
   }
 
@@ -51,7 +47,7 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
     print("**Possible answer**");
     print("  ");
     print("diagram : ");
-    printTree2D(node, "");
+    print(node);
     print("queue : $currentQueue");
     print("length : $length");
     print("best length : $bestLength");
@@ -62,13 +58,13 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   }
 }
 
-printTree2D(CustomNode? node, String space) {
-  if (node == null) return;
-  space = (node.leftChild != null) ? "" : "    ";
-  print((node.value == null) ? "  root  " : space + node.value.toString());
-  printTree2D(node.leftChild, space);
-  printTree2D(node.rightChild, space);
-}
+// printTree2D(CustomNode? node, String space) {
+//   if (node == null) return;
+//   space = (node.leftChild != null) ? "" : "    ";
+//   print((node.value == null) ? "  root  " : space + node.value.toString());
+//   printTree2D(node.leftChild, space);
+//   printTree2D(node.rightChild, space);
+// }
 
 double calculateUsedAreaOfChains(List<NodeDirection> list) {
   double max = 0;

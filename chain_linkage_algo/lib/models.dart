@@ -11,6 +11,11 @@ class CustomNode extends Equatable {
   @override
   List<Object?> get props => [leftChild, rightChild];
 
+  @override
+  String toString() {
+    return printGraph();
+  }
+
   printGraph() {
     final out = StringBuffer();
 
