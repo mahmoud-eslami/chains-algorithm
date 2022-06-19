@@ -8,19 +8,17 @@ double bestLength = 0;
 
 chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   Queue<NodeDirection> currentQueue = nodeToQueue(node, Queue());
-  List<NodeDirection> nodeDirectionList =
-      queueToNodeDirectionList(currentQueue);
-  double length = calculateUsedAreaOfChains(nodeDirectionList);
+  double length = calculateUsedAreaOfChains(currentQueue);
 
   /// improvement level 1
-  /// remove the part of tree when the length is more than best length
+  /// pruning the part of tree when the length is more than best length
   if (bestLength != 0 && length > bestLength) {
     // ignore this states
     return;
   }
 
   /// improvement level 2
-  /// remove the part of tree when the length is more than 2* max chain length
+  /// pruning the part of tree when the length is more than 2* max chain length
 
   // prevent to start when length of chains are smaller than 3
   // stop to call function when all chains linked
@@ -31,7 +29,7 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
       CustomNode leftLoaf =
           CustomNode(leftChild: CustomNode(value: chainValue));
       CustomNode rightLoaf =
-          CustomNode(leftChild: CustomNode(value: chainValue));
+          CustomNode(rightChild: CustomNode(value: chainValue));
       chainLinckageMethod(chains, leftLoaf, index + 1);
       chainLinckageMethod(chains, rightLoaf, index + 1);
     } else {
@@ -58,8 +56,8 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
 
     print("**Possible answer**");
     print("  ");
-    // print("diagram : ");
-    // print(node);
+    print("diagram : ");
+    print(node);
     print("queue : $currentQueue");
     print("length : $length");
     print("best length : $bestLength");
@@ -70,26 +68,19 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   }
 }
 
-// printTree2D(CustomNode? node, String space) {
-//   if (node == null) return;
-//   space = (node.leftChild != null) ? "" : "    ";
-//   print((node.value == null) ? "  root  " : space + node.value.toString());
-//   printTree2D(node.leftChild, space);
-//   printTree2D(node.rightChild, space);
-// }
-
-double calculateUsedAreaOfChains(List<NodeDirection> list) {
+double calculateUsedAreaOfChains(Queue<NodeDirection> queue) {
+  List<NodeDirection> list = queue.toList();
   double max = 0;
   double min = 0;
   double position = 0;
 
   for (var i = 0; i < list.length; i++) {
-    if (list[i].direction == "P") {
+    if (list[i].value == 0) {
       position += list[i].value;
       max = position;
-    } else if (list[i].direction == "R") {
+    } else if (list[i - 1].direction == "R") {
       position += list[i].value;
-    } else {
+    } else if (list[i - 1].direction == "L") {
       position -= list[i].value;
     }
 
@@ -102,10 +93,6 @@ double calculateUsedAreaOfChains(List<NodeDirection> list) {
 
   return max - min;
 }
-
-// give me a queue to return a list with same type
-List<NodeDirection> queueToNodeDirectionList(Queue<NodeDirection> queue) =>
-    queue.toList();
 
 // use Recursive to get all chians in order from tree as a list
 /// P : parent
