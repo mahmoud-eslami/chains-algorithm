@@ -74,11 +74,9 @@ double calculateUsedAreaOfChains(Queue<NodeDirection> queue) {
   double min = 0;
   double position = 0;
 
-  for (var i = 0; i < list.length; i++) {
-    if (list[i].value == 0) {
-      position += list[i].value;
-      max = position;
-    } else if (list[i - 1].direction == "R") {
+// start index from 1 and ignore root of tree
+  for (var i = 1; i < list.length; i++) {
+    if (list[i - 1].direction == "R") {
       position += list[i].value;
     } else if (list[i - 1].direction == "L") {
       position -= list[i].value;
@@ -104,7 +102,12 @@ Queue<NodeDirection> nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
     return queue;
   }
   queue.addLast(NodeDirection(
-      value: node.value ?? 0, direction: (node.leftChild == null) ? "R" : "L"));
+      value: node.value ?? 0,
+      direction: (node.leftChild == null && node.rightChild == null)
+          ? "F"
+          : (node.leftChild == null)
+              ? "R"
+              : "L"));
   nodeToQueue(node.leftChild, queue);
   nodeToQueue(node.rightChild, queue);
 
