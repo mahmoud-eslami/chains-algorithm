@@ -5,8 +5,16 @@ import 'package:chain_linkage_algo/models.dart';
 // this position show that what chain is start chain
 int globalStartPosition = 0;
 double bestLength = 0;
+int callCount = 0;
+
+resetAppState() {
+  globalStartPosition = 0;
+  bestLength = 0;
+  callCount = 0;
+}
 
 chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
+  callCount++;
   Queue<NodeDirection> currentQueue = nodeToQueue(node, Queue());
   double length = calculateUsedAreaOfChains(currentQueue);
 
@@ -22,7 +30,7 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   if (index < chains.length) {
     double maxOptimalLength = getMaxOptimalAnswer(node);
 
-    if (length > maxOptimalLength) {
+    if (length > 2 * maxOptimalLength) {
       // ignore this state
       return;
     }
@@ -158,6 +166,12 @@ List<double> parseInputToList(String input) {
   }
 
   return intList;
+}
+
+void endMessages() {
+  print(" ");
+  print("Function call Count : $callCount");
+  print(" ");
 }
 
 void startMessages() {
