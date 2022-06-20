@@ -10,22 +10,30 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
   Queue<NodeDirection> currentQueue = nodeToQueue(node, Queue());
   double length = calculateUsedAreaOfChains(currentQueue);
 
-  /// improvement level 1
+  // todo : improvement level 1
   /// pruning the part of tree when the length is more than best length
   if (bestLength != 0 && length > bestLength) {
-    // ignore this states
+    // ignore this state
     return;
   }
 
-  /// improvement level 2
-  /// pruning the part of tree when the length is more than 2* max chain length
+  // todo : improvement level 2
+  /// pruning the part of tree when the length is more than 2 * max chain length
+  if (index < chains.length) {
+    double maxOptimalLength = getMaxOptimalAnswer(node);
+
+    if (length > maxOptimalLength) {
+      // ignore this state
+      return;
+    }
+  }
 
   // prevent to start when length of chains are smaller than 3
   // stop to call function when all chains linked
   if (index < chains.length && chains.length >= 3) {
     if (node == null) {
       // create parent of tree for the first time
-      double chainValue = chains[index];
+      double chainValue = chains.reversed.toList()[index];
       CustomNode leftLoaf =
           CustomNode(leftChild: CustomNode(value: chainValue));
       CustomNode rightLoaf =
@@ -34,7 +42,7 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
       chainLinckageMethod(chains, rightLoaf, index + 1);
     } else {
       // update child of the parent
-      double chainValue = chains[index];
+      double chainValue = chains.reversed.toList()[index];
       node.value = chainValue;
       CustomNode leftChild = CustomNode(leftChild: node);
       CustomNode rightChild = CustomNode(rightChild: node);
@@ -66,6 +74,33 @@ chainLinckageMethod(List<double> chains, CustomNode? node, int index) {
     print("  ");
     print("  ");
   }
+}
+
+double getMaxOptimalAnswer(CustomNode? node) {
+  List<double> newList = getListOfDoublesFromQueue(node, []);
+  double max = 0;
+
+  for (var element in newList) {
+    if (max == 0) {
+      max = element;
+    } else {
+      if (element > max) {
+        max = element;
+      }
+    }
+  }
+  return max;
+}
+
+List<double> getListOfDoublesFromQueue(CustomNode? node, List<double> list) {
+  if (node == null) {
+    return list;
+  }
+  list.add(node.value ?? 0);
+  getListOfDoublesFromQueue(node.leftChild, list);
+  getListOfDoublesFromQueue(node.rightChild, list);
+
+  return list;
 }
 
 double calculateUsedAreaOfChains(Queue<NodeDirection> queue) {
@@ -104,7 +139,7 @@ Queue<NodeDirection> nodeToQueue(CustomNode? node, Queue<NodeDirection> queue) {
   queue.addLast(NodeDirection(
       value: node.value ?? 0,
       direction: (node.leftChild == null && node.rightChild == null)
-          ? "F"
+          ? "End"
           : (node.leftChild == null)
               ? "R"
               : "L"));

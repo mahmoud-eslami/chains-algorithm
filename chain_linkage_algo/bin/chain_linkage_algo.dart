@@ -8,7 +8,7 @@ void main(List<String> arguments) {
   // Reading name of the Geek
   print("input : ");
   String? input = stdin.readLineSync();
-  List<double> listOfChains = parseInputToList(input!).reversed.toList();
+  List<double> listOfChains = parseInputToList(input!);
 
   chainLinckageMethod(listOfChains, null, 0);
 }
